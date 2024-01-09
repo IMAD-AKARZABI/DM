@@ -1,0 +1,41 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.pipeline import Pipeline
+from sklearn.metrics import accuracy_score, classification_report
+# Les données sont chargées à partir d'un fichier CSV (db_reviews.csv) à l'aide de la bibliothèque pandas
+data = pd.read_csv('db_reviews.csv',delimiter=';')
+# la colonne 'sentiment' est convertie en type 'object'
+data['sentiment'] = data['sentiment'].astype('object')
+# Remplacer plusieurs valeurs en une seule fois dans la colonne 'sentiment'
+valeurs_a_remplacer = {0.0: 'N', 1.0: 'P'}
+data['sentiment'] = data['sentiment'].replace(valeurs_a_remplacer)
+print("Valeurs manquantes dans 'review':", data['review'].isnull().sum())
+print("Valeurs manquantes dans 'sentiment':", data['sentiment'].isnull().sum())
+data = data.dropna()
+# Diviser l'ensemble de données en ensembles d'apprentissage et de test
+X = data['review']
+y = data['sentiment']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Création d'un pipeline NLP
+pipeline = Pipeline([
+    ('tfidf', TfidfVectorizer(max_features=5000)),  # Vectorisation TF-IDF
+    ('classifier', MultinomialNB())  #  Modèle de classification
+])
+# Entraînement du modèle et prédiction sur l'ensemble de test
+pipeline.fit(X_train, y_train)
+y_pred = pipeline.predict(X_test)
+# Évaluation du modèle
+accuracy = accuracy_score(y_test, y_pred)
+report = classification_report(y_test, y_pred)
+# Affichage des résultats
+print(f"Précision du modèle : {accuracy:.2f}")
+print(report)
+# Exemple d'un nouvel avis à prédire
+nouvel_avis_1 = ["i like this film "]
+nouvel_avis_2 = ["i dont like this film "]
+prediction_1 = pipeline.predict(nouvel_avis_1)
+print(f"Sentiment prédit avis 1 : {prediction_1}")
+prediction_2 = pipeline.predict(nouvel_avis_2)
+print(f"Sentiment prédit avis 2 : {prediction_2}")
