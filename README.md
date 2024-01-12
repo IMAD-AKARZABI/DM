@@ -20,5 +20,4 @@ Ce projet utilise un modèle de classification bayésienne naïve pour prédire 
 
 ## Avis Importants
 - Assurez-vous d'avoir le fichier de données 'db_reviews.csv' dans le dossier `data` avant d'exécuter les scripts.
-- N'hésitez pas à contacter l'auteur pour toute question ou clarification.
 
